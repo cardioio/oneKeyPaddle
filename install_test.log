@@ -1,0 +1,35 @@
+==================================================
+ PaddleOCR 一键安装脚本 (macOS / Linux)
+==================================================
+[1/6] 已检测到 uv: uv 0.11.19 (7b2cff1c3 2026-06-03 aarch64-apple-darwin)
+[2/6] 确保 Python 3.11 可用 ...
+Installed Python 3.11.15 in 6.82s
+ + cpython-3.11.15-macos-aarch64-none (python3.11)
+[3/6] 创建虚拟环境 .venv ...
+Using CPython 3.11.15
+Creating virtual environment at: .venv
+Activate with: source .venv/bin/activate
+      已激活虚拟环境: /Users/x/Workbuddy/2026-08-17-14-17-25/.venv/bin/python
+[4/6] 安装 paddlepaddle + paddleocr（会下载一些包，请稍候）...
+[5/6] 验证模块导入 ...
+/Users/x/Workbuddy/2026-08-17-14-17-25/.venv/lib/python3.11/site-packages/paddle/utils/cpp_extension/extension_utils.py:712: UserWarning: No ccache found. Please be aware that recompiling all source files may be required. You can download and install ccache from: https://github.com/ccache/ccache/blob/master/doc/INSTALL.md
+  warnings.warn(warning_message)
+  paddle      : 3.3.1
+  paddleocr   : 3.7.0
+[6/6] 运行 OCR 成功测试（首次会联网下载模型）...
+/Users/x/Workbuddy/2026-08-17-14-17-25/.venv/lib/python3.11/site-packages/paddle/utils/cpp_extension/extension_utils.py:712: UserWarning: No ccache found. Please be aware that recompiling all source files may be required. You can download and install ccache from: https://github.com/ccache/ccache/blob/master/doc/INSTALL.md
+  warnings.warn(warning_message)
+[32mCreating model: ('PP-OCRv6_medium_det', None, None)[0m
+[33mChecking connectivity to the model hosters, this may take a while. To bypass this check, set `PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK` to `True`.[0m
+[32mUsing official model (PP-OCRv6_medium_det), the model files will be automatically downloaded and saved in `/Users/x/.paddlex/official_models/PP-OCRv6_medium_det`.[0m
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files:  20%|██        | 1/5 [00:01<00:04,  1.21s/it]Fetching 5 files:  40%|████      | 2/5 [00:01<00:02,  1.46it/s]Fetching 5 files: 100%|██████████| 5/5 [00:06<00:00,  1.38s/it]Fetching 5 files: 100%|██████████| 5/5 [00:06<00:00,  1.30s/it]
+[32mCreating model: ('PP-OCRv6_medium_rec', None, None)[0m
+[32mUsing official model (PP-OCRv6_medium_rec), the model files will be automatically downloaded and saved in `/Users/x/.paddlex/official_models/PP-OCRv6_medium_rec`.[0m
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files:  20%|██        | 1/5 [00:00<00:03,  1.05it/s]Fetching 5 files:  40%|████      | 2/5 [00:01<00:01,  1.67it/s]Fetching 5 files: 100%|██████████| 5/5 [00:07<00:00,  1.73s/it]Fetching 5 files: 100%|██████████| 5/5 [00:07<00:00,  1.57s/it]
+  推理完成，返回条目数: 1
+✅ 一键安装与测试全部成功！
+--------------------------------------------------
+ 以后想重新进入这个环境，只需在终端执行：
+   source .venv/bin/activate
+ 退出环境： deactivate
+--------------------------------------------------

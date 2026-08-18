@@ -1,0 +1,40 @@
+==================================================
+ PaddleOCR 一键安装脚本 (macOS / Linux)
+==================================================
+[1/6] 已检测到 uv: uv 0.11.19 (7b2cff1c3 2026-06-03 aarch64-apple-darwin)
+[2/6] 确保 Python 3.11 可用 ...
+Python 3.11 is already installed
+[3/6] 创建虚拟环境 .venv ...
+Using CPython 3.11.15
+Creating virtual environment at: .venv
+Activate with: source .venv/bin/activate
+      已激活虚拟环境: /Users/x/Workbuddy/2026-08-17-14-17-25/.venv/bin/python
+[4/6] 安装 paddlepaddle + paddleocr（会下载一些包，请稍候）...
+[5/6] 验证模块导入 ...
+/Users/x/Workbuddy/2026-08-17-14-17-25/.venv/lib/python3.11/site-packages/paddle/utils/cpp_extension/extension_utils.py:712: UserWarning: No ccache found. Please be aware that recompiling all source files may be required. You can download and install ccache from: https://github.com/ccache/ccache/blob/master/doc/INSTALL.md
+  warnings.warn(warning_message)
+  paddle      : 3.3.1
+  paddleocr   : 3.7.0
+[6/6] 运行 OCR 成功测试，并生成示例图（首次会联网下载模型）...
+/Users/x/Workbuddy/2026-08-17-14-17-25/.venv/lib/python3.11/site-packages/paddle/utils/cpp_extension/extension_utils.py:712: UserWarning: No ccache found. Please be aware that recompiling all source files may be required. You can download and install ccache from: https://github.com/ccache/ccache/blob/master/doc/INSTALL.md
+  warnings.warn(warning_message)
+[32mCreating model: ('PP-OCRv6_medium_det', None, None)[0m
+[32mModel files already exist. Using cached files. To redownload, please delete the directory manually: `/Users/x/.paddlex/official_models/PP-OCRv6_medium_det`.[0m
+[32mCreating model: ('PP-OCRv6_medium_rec', None, None)[0m
+[32mModel files already exist. Using cached files. To redownload, please delete the directory manually: `/Users/x/.paddlex/official_models/PP-OCRv6_medium_rec`.[0m
+Connecting to https://paddle-model-ecology.bj.bcebos.com/paddlex/PaddleX3.0/fonts/simfang.ttf ...
+Downloading simfang.ttf ...
+[                                                  ] 0.04%[                                                  ] 0.97%[=                                                 ] 3.60%[===                                               ] 6.24%[=======                                           ] 14.52%[============                                      ] 24.21%[======================                            ] 45.12%[==============================================    ] 93.34%[==================================================] 100.00%
+[32m{'res': {'input_path': '/var/folders/wy/rd4jdcxx1p5758c4pvhx6lfh0000gn/T/tmpfbzulspn.png', 'page_index': None, 'model_settings': {'use_doc_preprocessor': False, 'use_textline_orientation': False}, 'dt_polys': array([[[15, 41],
+        ...,
+        [15, 82]]], shape=(1, 4, 2), dtype=int16), 'text_det_params': {'limit_side_len': 64, 'limit_type': 'min', 'thresh': 0.3, 'max_side_limit': 4000, 'box_thresh': 0.6, 'unclip_ratio': 1.5}, 'text_type': 'general', 'textline_orientation_angles': array([-1]), 'text_rec_score_thresh': 0.0, 'return_word_box': False, 'rec_texts': ['PaddleOCR install OK 2026'], 'rec_scores': array([0.98624361]), 'rec_polys': array([[[15, 41],
+        ...,
+        [15, 82]]], shape=(1, 4, 2), dtype=int16), 'rec_boxes': array([[15, ..., 82]], shape=(1, 4), dtype=int16)}}[0m
+  已生成示例图，保存在 output/ 目录
+✅ 一键安装与测试全部成功！
+--------------------------------------------------
+ 以后想重新进入这个环境，只需在终端执行：
+   source .venv/bin/activate
+ 退出环境： deactivate
+ 示例图在： output/  （用看图工具打开即可看到识别结果）
+--------------------------------------------------
