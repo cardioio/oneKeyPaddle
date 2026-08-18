@@ -3,3 +3,5 @@
 output/
 *.log
 uv-installer.*
+__pycache__/
+*.py[cod]

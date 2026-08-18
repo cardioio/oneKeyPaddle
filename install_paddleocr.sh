@@ -102,7 +102,7 @@ cleanup() {
     rmdir "$LOCK_DIR" 2>/dev/null || true
   fi
   if (( status != 0 && ! error_reported )); then
-    echo "错误: 安装意外终止（退出码 $status）。完整日志: $LOG_FILE" >&2
+    echo "错误: 安装意外终止（退出码 ${status}）。完整日志: $LOG_FILE" >&2
   fi
   exit "$status"
 }
@@ -124,7 +124,7 @@ if ! mkdir "$LOCK_DIR" 2>/dev/null; then
     read -r lock_pid < "$LOCK_DIR/pid" || true
   fi
   if [[ "$lock_pid" =~ ^[0-9]+$ ]] && kill -0 "$lock_pid" 2>/dev/null; then
-    echo "错误: 另一个安装进程正在运行（PID $lock_pid）。" >&2
+    echo "错误: 另一个安装进程正在运行（PID ${lock_pid}）。" >&2
     exit 1
   fi
   echo "检测到失效的安装锁，正在恢复。"
@@ -146,7 +146,7 @@ echo "模型缓存目录: $MODEL_CACHE_DIR"
 echo "测试输出目录: $OUTPUT_DIR"
 echo "安装日志: $LOG_FILE"
 
-for command_name in curl df mktemp uname; do
+for command_name in cp curl df mktemp uname; do
   if ! command -v "$command_name" >/dev/null 2>&1; then
     echo "错误: 缺少必需命令: $command_name" >&2
     exit 1
@@ -186,10 +186,12 @@ sha256_file() {
 }
 
 uv_bin=""
-if command -v uv >/dev/null 2>&1 && [[ "$(uv --version | awk '{print $2}')" == "$UV_VERSION" ]]; then
-  uv_bin=$(command -v uv)
+uv_candidate=$(command -v uv 2>/dev/null || true)
+if [[ -n "$uv_candidate" && "$uv_candidate" != "$VENV_DIR/bin/uv" ]] \
+  && [[ "$("$uv_candidate" --version | awk '{print $2}')" == "$UV_VERSION" ]]; then
+  uv_bin="$uv_candidate"
   echo "[1/6] 使用已安装的 uv $UV_VERSION: $uv_bin"
-elif [[ -x "$TOOLS_DIR/uv" && "$($TOOLS_DIR/uv --version | awk '{print $2}')" == "$UV_VERSION" ]]; then
+elif [[ -x "$TOOLS_DIR/uv" && "$("$TOOLS_DIR/uv" --version | awk '{print $2}')" == "$UV_VERSION" ]]; then
   uv_bin="$TOOLS_DIR/uv"
   echo "[1/6] 使用专用 uv $UV_VERSION: $uv_bin"
 else
@@ -205,7 +207,7 @@ else
   fi
   UV_INSTALL_DIR="$TOOLS_DIR" UV_NO_MODIFY_PATH=1 sh "$temp_installer"
   uv_bin="$TOOLS_DIR/uv"
-  if [[ ! -x "$uv_bin" || "$($uv_bin --version | awk '{print $2}')" != "$UV_VERSION" ]]; then
+  if [[ ! -x "$uv_bin" || "$("$uv_bin" --version | awk '{print $2}')" != "$UV_VERSION" ]]; then
     echo "错误: uv 安装后版本或路径不符合预期。" >&2
     exit 1
   fi
@@ -234,6 +236,11 @@ fi
 readonly VENV_PYTHON="$VENV_DIR/bin/python"
 if [[ ! -x "$VENV_PYTHON" ]]; then
   echo "错误: 虚拟环境 Python 不存在: $VENV_PYTHON" >&2
+  exit 1
+fi
+cp -f -- "$UV_BIN" "$VENV_DIR/bin/uv"
+if [[ "$("$VENV_DIR/bin/uv" --version | awk '{print $2}')" != "$UV_VERSION" ]]; then
+  echo "错误: 无法在虚拟环境中提供固定版本 uv。" >&2
   exit 1
 fi
 

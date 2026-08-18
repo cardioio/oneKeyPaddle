@@ -46,11 +46,18 @@
 
 ## 安装后使用
 
+安装脚本已经自动下载默认的文字检测模型和文字识别模型，不需要再手动下载或配置模型。
+
+### 1. 激活环境
+
 macOS / Linux：
 
 ```bash
-source "$HOME/Library/Application Support/oneKeyPaddle/venv/bin/activate"  # macOS
-source "${XDG_DATA_HOME:-$HOME/.local/share}/onekeypaddle/venv/bin/activate" # Linux
+# macOS
+source "$HOME/Library/Application Support/oneKeyPaddle/venv/bin/activate"
+
+# Linux
+source "${XDG_DATA_HOME:-$HOME/.local/share}/onekeypaddle/venv/bin/activate"
 ```
 
 Windows PowerShell：
@@ -59,45 +66,59 @@ Windows PowerShell：
 & "$env:LOCALAPPDATA\oneKeyPaddle\venv\Scripts\Activate.ps1"
 ```
 
-然后可以在已激活的环境中使用：
+### 2. 识别图片或文件夹
+
+仓库中的 `paddle_ocr.py` 是独立的识别脚本，它会自动使用安装脚本已经下载好的模型。激活环境后，安装器提供的固定版本 uv 也会自动进入 `PATH`。如果使用上面的一行命令完成安装，本地还没有仓库文件，可以先下载这个脚本。
+
+macOS / Linux：
 
 ```bash
-python -c "from paddleocr import PaddleOCR; print('PaddleOCR ready')"
+curl --proto '=https' --tlsv1.2 -fLsS -o paddle_ocr.py https://raw.githubusercontent.com/cardioio/oneKeyPaddle/main/paddle_ocr.py
 ```
+
+Windows PowerShell：
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/cardioio/oneKeyPaddle/main/paddle_ocr.py -OutFile paddle_ocr.py
+```
+
+激活环境后，在 `paddle_ocr.py` 所在目录执行：
+
+```bash
+uv run --active --no-project python paddle_ocr.py /xxxx/xxx/xxx.jpg
+```
+
+Windows 路径同样放在最后：
+
+```powershell
+uv run --active --no-project python .\paddle_ocr.py "C:\xxxx\xxx\xxx.jpg"
+```
+
+`uv python xxx.py` 不是 uv 的运行命令；正确形式是 `uv run ... python xxx.py`。这里的 `--active` 明确使用刚刚激活的 Paddle 环境，`--no-project` 避免 uv 在当前仓库创建另一个虚拟环境。
+
+输入也可以是文件夹。脚本会递归处理其中的 JPG、JPEG、PNG、BMP、TIF、TIFF 和 WebP 图片，并且只加载一次模型：
+
+```bash
+uv run --active --no-project python paddle_ocr.py /xxxx/整个图片文件夹
+```
+
+默认在当前目录的 `ocr_output/` 中生成带框结果图。处理文件夹时会保留原来的子目录结构，避免同名图片互相覆盖。可以用 `-o` 指定输出目录：
+
+```bash
+uv run --active --no-project python paddle_ocr.py /xxxx/图片文件夹 -o /xxxx/识别结果
+```
+
+终端会逐张打印图片路径、识别文字和置信度，最后打印成功数量、文本数量及带框结果目录。路径中有空格时，请用引号包住路径。第一次生成带文字的结果图时，PaddleX 可能额外下载一次绘图字体，这不是重新下载 OCR 模型。
 
 当前固定版本为：`uv 0.11.19`、`Python 3.11.15`、`paddlepaddle 3.3.1`、`paddleocr 3.7.0`、`paddlex 3.7.2`。
-
-## 镜像和离线模型
-
-指定 PaddlePaddle 软件源时必须使用 HTTPS：
-
-```bash
-PADDLEOCR_INDEX_URL=https://your-mirror.example/simple bash install_paddleocr.sh
-```
-
-使用本地模型时，必须同时提供检测模型和识别模型目录：
-
-```bash
-PADDLEOCR_DET_MODEL_DIR=/path/to/det \
-PADDLEOCR_REC_MODEL_DIR=/path/to/rec \
-bash install_paddleocr.sh
-```
-
-两个目录都必须包含 `inference.yml` 和 `inference.pdiparams`。也可以设置旧版兼容变量 `PADDLEOCR_MODEL_DIR`，其下应存在 `PP-OCRv6_medium_det/` 和 `PP-OCRv6_medium_rec/` 两个子目录。
-
-离线模型只表示模型文件不联网获取；如果 Python、uv 或依赖包不在本地缓存中，安装阶段仍需要网络。首次在线安装会将模型放入固定的 `models/official_models/` 目录。
 
 ## 注意事项
 
 - 脚本安装的是 CPU 版，不包含 CUDA/GPU 配置。
 - 至少预留 2 GiB 磁盘空间；完整安装还会产生 uv 缓存和模型缓存。
-- 首次运行可能下载 Python、Python 包和 OCR 模型，耗时取决于网络。
-- 不要在多个终端同时运行安装脚本；脚本会使用安装锁保护固定目录。
-- 安装目录是固定的，脚本会重建其中的 `venv/`，不要把个人文件放进该目录。
-- `PADDLEOCR_INDEX_URL` 只接受 HTTPS；不要把带密码的 URL 放进公共命令历史或日志。
-- `PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK` 仅由脚本在本地模型目录校验成功后设置。
-- `No ccache found` 是 Paddle 的性能警告，不代表安装失败。
-- 发生错误时先查看安装输出末尾给出的 `logs/` 日志路径。
+- 首次运行会下载 Python、Python 包和 OCR 模型。
+- 安装测试完成后，默认检测模型和识别模型已经保存在固定的 `models/official_models/` 目录。
+
 
 ## 卸载
 

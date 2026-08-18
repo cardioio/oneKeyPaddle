@@ -128,7 +128,8 @@ try {
 
     $UvBin = $null
     $ExistingUv = Get-Command uv -ErrorAction SilentlyContinue
-    if ($ExistingUv) {
+    $ExistingVenvUv = Join-Path $VenvDir "Scripts\uv.exe"
+    if ($ExistingUv -and $ExistingUv.Source -ne $ExistingVenvUv) {
         $ExistingUvOutput = & $ExistingUv.Source --version 2>$null
         $ExistingUvExitCode = $LASTEXITCODE
         if ($ExistingUvExitCode -eq 0 -and $ExistingUvOutput -match '^uv\s+([^\s]+)') {
@@ -220,6 +221,15 @@ try {
     $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
     if (-not (Test-Path -LiteralPath $VenvPython -PathType Leaf)) {
         throw "虚拟环境 Python 不存在: $VenvPython"
+    }
+    $VenvUv = Join-Path $VenvDir "Scripts\uv.exe"
+    Copy-Item -LiteralPath $UvBin -Destination $VenvUv -Force
+    $VenvUvOutput = & $VenvUv --version
+    $VenvUvExitCode = $LASTEXITCODE
+    if ($VenvUvExitCode -ne 0 -or
+        $VenvUvOutput -notmatch '^uv\s+([^\s]+)' -or
+        $Matches[1] -ne $UvVersion) {
+        throw "无法在虚拟环境中提供固定版本 uv。"
     }
 
     if ($env:PADDLEOCR_INDEX_URL) {
