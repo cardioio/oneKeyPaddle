@@ -5,3 +5,5 @@ output/
 uv-installer.*
 __pycache__/
 *.py[cod]
+input/*
+!input/.gitkeep

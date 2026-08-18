@@ -82,30 +82,35 @@ Windows PowerShell：
 Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/cardioio/oneKeyPaddle/main/paddle_ocr.py -OutFile paddle_ocr.py
 ```
 
-激活环境后，在 `paddle_ocr.py` 所在目录执行：
+激活环境后，在 `paddle_ocr.py` 所在目录执行。仓库已经提供默认的 `input/` 文件夹，把图片放进去后可以直接运行：
 
 ```bash
-uv run --active --no-project python paddle_ocr.py /xxxx/xxx/xxx.jpg
+cp /xxxx/xxx/xxx.jpg input/
+uv run paddle_ocr.py
 ```
 
-Windows 路径同样放在最后：
+脚本会递归扫描 `./input/`，并把带框图片输出到 `./ocr_output/`。Windows PowerShell：
 
 ```powershell
-uv run --active --no-project python .\paddle_ocr.py "C:\xxxx\xxx\xxx.jpg"
+Copy-Item "C:\xxxx\xxx\xxx.jpg" .\input\
+uv run .\paddle_ocr.py
 ```
 
-`uv python xxx.py` 不是 uv 的运行命令；正确形式是 `uv run ... python xxx.py`。这里的 `--active` 明确使用刚刚激活的 Paddle 环境，`--no-project` 避免 uv 在当前仓库创建另一个虚拟环境。
+`uv run paddle_ocr.py` 会使用已经激活的固定 Paddle 环境。`uv python xxx.py` 不是 uv 的运行命令；如果当前目录存在其他 uv 项目配置，也可以使用更严格的写法 `uv run --active --no-project python paddle_ocr.py`。
 
-输入也可以是文件夹。脚本会递归处理其中的 JPG、JPEG、PNG、BMP、TIF、TIFF 和 WebP 图片，并且只加载一次模型：
+也可以直接传入一张图片或其他文件夹，覆盖默认的 `input/`：
 
 ```bash
-uv run --active --no-project python paddle_ocr.py /xxxx/整个图片文件夹
+uv run paddle_ocr.py /xxxx/xxx/xxx.jpg
+uv run paddle_ocr.py /xxxx/整个图片文件夹
 ```
+
+文件夹会递归处理其中的 JPG、JPEG、PNG、BMP、TIF、TIFF 和 WebP 图片，并且只加载一次模型。
 
 默认在当前目录的 `ocr_output/` 中生成带框结果图。处理文件夹时会保留原来的子目录结构，避免同名图片互相覆盖。可以用 `-o` 指定输出目录：
 
 ```bash
-uv run --active --no-project python paddle_ocr.py /xxxx/图片文件夹 -o /xxxx/识别结果
+uv run paddle_ocr.py /xxxx/图片文件夹 -o /xxxx/识别结果
 ```
 
 终端会逐张打印图片路径、识别文字和置信度，最后打印成功数量、文本数量及带框结果目录。路径中有空格时，请用引号包住路径。第一次生成带文字的结果图时，PaddleX 可能额外下载一次绘图字体，这不是重新下载 OCR 模型。

@@ -19,6 +19,7 @@ SUPPORTED_EXTENSIONS = {
     ".tiff",
     ".webp",
 }
+DEFAULT_INPUT_DIR = Path("input")
 
 
 def installed_app_root() -> Path:
@@ -47,7 +48,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="使用 PaddleOCR 识别一张图片或递归识别文件夹中的图片。"
     )
-    parser.add_argument("input", type=Path, help="图片文件或图片文件夹")
+    parser.add_argument(
+        "input",
+        type=Path,
+        nargs="?",
+        default=DEFAULT_INPUT_DIR,
+        help="图片文件或图片文件夹，默认递归扫描 ./input",
+    )
     parser.add_argument(
         "-o",
         "--output",
