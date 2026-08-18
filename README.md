@@ -89,7 +89,7 @@ cp /xxxx/xxx/xxx.jpg input/
 uv run paddle_ocr.py
 ```
 
-脚本会递归扫描 `./input/`，并把带框图片输出到 `./ocr_output/`。Windows PowerShell：
+脚本会递归扫描 `./input/`，并把带框图片和识别文字的 Markdown 文件输出到 `./ocr_output/`。Windows PowerShell：
 
 ```powershell
 Copy-Item "C:\xxxx\xxx\xxx.jpg" .\input\
@@ -105,15 +105,23 @@ uv run paddle_ocr.py /xxxx/xxx/xxx.jpg
 uv run paddle_ocr.py /xxxx/整个图片文件夹
 ```
 
-文件夹会递归处理其中的 JPG、JPEG、PNG、BMP、TIF、TIFF 和 WebP 图片，并且只加载一次模型。
+文件夹会递归处理其中的 JPG、JPEG、PNG、BMP、TIF、TIFF 和 WebP 图片，并且只加载一次模型。对于有明显栏沟的左右分栏页面，脚本会根据文本框坐标自动调整阅读顺序：先读取通栏标题，再从上到下读取左栏，最后读取右栏；不需要额外下载版面分析模型。
 
-默认在当前目录的 `ocr_output/` 中生成带框结果图。处理文件夹时会保留原来的子目录结构，避免同名图片互相覆盖。可以用 `-o` 指定输出目录：
+默认在当前目录的 `ocr_output/` 中生成带框结果图，以及与原图主文件名相同的 `.md` 文件。Markdown 按识别顺序逐行保存文字，不包含置信度；终端仍会显示每行文字的置信度。例如：
+
+```text
+input/article.jpg
+ocr_output/article_ocr_res_img.jpg
+ocr_output/article.md
+```
+
+处理文件夹时会保留原来的子目录结构，避免不同子目录中的同名图片互相覆盖。可以用 `-o` 指定输出目录：
 
 ```bash
 uv run paddle_ocr.py /xxxx/图片文件夹 -o /xxxx/识别结果
 ```
 
-终端会逐张打印图片路径、识别文字和置信度，最后打印成功数量、文本数量及带框结果目录。路径中有空格时，请用引号包住路径。第一次生成带文字的结果图时，PaddleX 可能额外下载一次绘图字体，这不是重新下载 OCR 模型。
+终端会逐张打印图片路径、识别文字、置信度和 Markdown 文件路径，最后打印成功数量、文本数量及结果目录。路径中有空格时，请用引号包住路径。第一次生成带文字的结果图时，PaddleX 可能额外下载一次绘图字体，这不是重新下载 OCR 模型。
 
 当前固定版本为：`uv 0.11.19`、`Python 3.11.15`、`paddlepaddle 3.3.1`、`paddleocr 3.7.0`、`paddlex 3.7.2`。
 
