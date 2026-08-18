@@ -316,8 +316,40 @@ if [[ -n "$det_model_dir" || -n "$rec_model_dir" ]]; then
 else
   unset PADDLEOCR_DET_MODEL_DIR PADDLEOCR_REC_MODEL_DIR
   unset PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK
-  echo "[6/6] 运行 OCR 测试；首次运行会下载模型到固定缓存目录 ..."
+  echo "[6/6] 预下载默认 OCR 模型到固定缓存目录 ..."
 fi
+
+prepare_models() {
+  "$VENV_PYTHON" - <<'PY'
+import os
+import socket
+from paddleocr import PaddleOCR
+
+socket.setdefaulttimeout(120)
+print("  模型 1/2: PP-OCRv6_medium_det（文字检测）")
+print("  模型 2/2: PP-OCRv6_medium_rec（文字识别）")
+kwargs = {
+    "use_doc_orientation_classify": False,
+    "use_doc_unwarping": False,
+    "use_textline_orientation": False,
+}
+det_dir = os.environ.get("PADDLEOCR_DET_MODEL_DIR")
+rec_dir = os.environ.get("PADDLEOCR_REC_MODEL_DIR")
+if det_dir and rec_dir:
+    kwargs.update(
+        text_detection_model_dir=det_dir,
+        text_recognition_model_dir=rec_dir,
+    )
+PaddleOCR(
+    **kwargs,
+)
+print("  默认 OCR 模型已准备完成。")
+PY
+}
+
+prepare_models
+
+echo "[6/6] 模型准备完成，开始运行 OCR 验证 ..."
 
 run_smoke_test() {
   "$VENV_PYTHON" - <<'PY'

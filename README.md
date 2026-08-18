@@ -116,8 +116,9 @@ uv run --active --no-project python paddle_ocr.py /xxxx/图片文件夹 -o /xxxx
 
 - 脚本安装的是 CPU 版，不包含 CUDA/GPU 配置。
 - 至少预留 2 GiB 磁盘空间；完整安装还会产生 uv 缓存和模型缓存。
-- 首次运行会下载 Python、Python 包和 OCR 模型。
-- 安装测试完成后，默认检测模型和识别模型已经保存在固定的 `models/official_models/` 目录。
+- 安装阶段会先预下载两个必要模型，并显示 PaddleX 的下载进度：`PP-OCRv6_medium_det`（文字检测）和 `PP-OCRv6_medium_rec`（文字识别）。
+- 安装测试完成后，默认检测模型和识别模型已经保存在固定的 `models/official_models/` 目录；正常使用 `paddle_ocr.py` 时不会再次下载模型。
+- 如果预下载阶段失败，安装会直接失败并给出日志路径，不会留下一个看似成功但缺少模型的环境。
 
 
 ## 卸载
